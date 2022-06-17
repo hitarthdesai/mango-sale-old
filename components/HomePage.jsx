@@ -8,7 +8,7 @@ function HomePage() {
         <>
         <Header />
         <MainSection />
-        <Footer />
+        {/* <Footer /> */}
         </>
     );
 }
