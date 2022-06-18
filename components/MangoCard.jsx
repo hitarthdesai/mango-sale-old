@@ -22,19 +22,22 @@ function MangoCard({ mango, cartContext }) {
     const price = 500;
     const stock = 1;
 
-    const [addedToCart, setAddedToCart] = useState(false);
-    const [quantity, setQuantity] = useState(0);
     const {cart, setCart} = useContext(cartContext);
+    const initialQuantity = cart[name];
+    const defaultValueOfQuantity = initialQuantity;
+    const [quantity, setQuantity] = useState(defaultValueOfQuantity);
+    const defaultValueOfAddedToCart = initialQuantity !== 0;
+    const [addedToCart, setAddedToCart] = useState(defaultValueOfAddedToCart);
 
     const RemindMeButton = () => (
         <Button><AddAlertIcon />Remind Me</Button>
     );
     const AddToCartButton = () => (
         <IconButton onClick={() => {
-            setQuantity(1);
             setAddedToCart(true);
+            setQuantity(1);
             let newCart = cart;
-            newCart[name] = quantity;
+            newCart[name] = 1;
             setCart(newCart);
         }}><AddShoppingCartIcon /></IconButton>
     )
@@ -54,15 +57,15 @@ function MangoCard({ mango, cartContext }) {
                     <div style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
                         <IconButton onClick={() => {
                             if(quantity == 1) {
+                                setAddedToCart(false);
                                 setQuantity(0);
                                 let newCart = cart;
-                                newCart[name] = quantity;
+                                newCart[name] = 0;
                                 setCart(newCart);
-                                setAddedToCart(false);
                             } else {
                                 setQuantity(quantity - 1);
                                 let newCart = cart;
-                                newCart[name] = quantity;
+                                newCart[name] = quantity - 1;
                                 setCart(newCart);
                             }
                         }}>
@@ -72,7 +75,7 @@ function MangoCard({ mango, cartContext }) {
                         <IconButton onClick={() => {
                             setQuantity(quantity + 1);
                             let newCart = cart;
-                            newCart[name] = quantity;
+                            newCart[name] = quantity + 1;
                             setCart(newCart);
                         }}>
                             <AddIcon />
