@@ -5,7 +5,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { collection, getDocs, query, setDoc, where } from "firebase/firestore";
 
 function Form({ currentInventory }) {
     const allMangoes = Object.keys(currentInventory);
