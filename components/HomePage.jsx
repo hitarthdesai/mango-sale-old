@@ -29,13 +29,12 @@ function HomePage() {
     const CartContext = createContext({});
     const [viewCart, setViewCart] = useState(false);
 
-    console.log(inventory)
     return (
         <><CartContext.Provider value={{cart, setCart}}>
         {/* <Header /> */}
         {/* {viewCart ? <Cart cartContext={CartContext} setViewCart={setViewCart} /> : <MainSection cartContext={CartContext} setViewCart={setViewCart} />} */}
         {/* <Footer /> */}
-        <Form />
+        <Form currentInventory={inventory}/>
         </CartContext.Provider></>
     );
 }
