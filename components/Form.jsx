@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../firebase"
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
@@ -8,15 +8,30 @@ import Grid from "@mui/material/Grid";
 import { collection, getDocs, query, setDoc, where } from "firebase/firestore";
 
 function Form({ currentInventory }) {
-    const allMangoes = Object.keys(currentInventory);
+    let allMangoes = [];
+    currentInventory.map(mango => allMangoes.push(mango.name));
     const [selectedMango, setSelectedMango] = useState("");
+    const [detailsOfSelectedMango, setDetailsOfSelectedMango] = useState({});
     const [stock, setStock] = useState("");
     const [price, setPrice] = useState("");
     const [discount, setDiscount] = useState("");
+
+    useEffect(() => {
+        if(Object.keys(detailsOfSelectedMango).length !== 0) {
+            setStock(detailsOfSelectedMango.stock);
+            setPrice(detailsOfSelectedMango.price);
+            setDiscount(detailsOfSelectedMango.discount);
+        } else {
+            setStock("");
+            setPrice("");
+            setDiscount("");
+        }
+    }, [selectedMango])
     
+
     const handleSubmit = event => {
         event.preventDefault();
-        let newData = currentInventory[selectedMango];
+        let newData = detailsOfSelectedMango;
         newData.price = Number(price);
         newData.stock = Number(stock);
         newData.discount = Number(discount);
@@ -25,7 +40,11 @@ function Form({ currentInventory }) {
         const mangoQuery = query(inventoryReference, where("name", "==", selectedMango));
         getDocs(mangoQuery).then(querySnapshot => {
             const mangoDocRef = querySnapshot.docs[0].ref;
-            setDoc(mangoDocRef, newData, { merge: true}).then(() => console.log("UPDATED SUCCESSFULLY")).catch(error => console.error(error));
+            setDoc(mangoDocRef, newData, { merge: true}).then(() => {
+                console.log("UPDATED SUCCESSFULLY");
+                setSelectedMango("");
+                setDetailsOfSelectedMango({});
+            }).catch(error => console.error(error));
         })
         
     }
@@ -33,10 +52,11 @@ function Form({ currentInventory }) {
     const handleMangoSelect = event => {
         const nameOfSelectedMango = event.target.value;
         setSelectedMango(nameOfSelectedMango);
-        const detailsOfSelectedMango = currentInventory[nameOfSelectedMango];
-        setStock(detailsOfSelectedMango.stock);
-        setPrice(detailsOfSelectedMango.price);
-        setDiscount(detailsOfSelectedMango.discount);
+        currentInventory.map(mangoObject => {
+            if(mangoObject.name === nameOfSelectedMango) {
+                setDetailsOfSelectedMango(mangoObject)
+            }
+        });
     }
 
     const ComboBox = () => {
@@ -59,7 +79,7 @@ function Form({ currentInventory }) {
 
     const handleChange = event => {
         const newValue = event.target.value;
-        if(newValue < 0 || isNaN(newValue))
+        if(isNaN(newValue) || Number(newValue) < 0)
             return;
         const elementID = event.target.id;
         if(elementID === "stock")
@@ -82,6 +102,7 @@ function Form({ currentInventory }) {
                 sx={{ width: "300px", marginTop: "1rem" }} 
                 value={stock} 
                 helperText="Enter New Stock"
+                placeholder="Select a Mango to get current value"
                 />
                 <TextField 
                 id="price"
@@ -91,6 +112,7 @@ function Form({ currentInventory }) {
                 sx={{ width: "300px", marginTop: "1rem" }} 
                 value={price} 
                 helperText="Enter New Price"
+                placeholder="Select a Mango to get current value"
                 />
                 <TextField 
                 id="discount"
@@ -100,8 +122,9 @@ function Form({ currentInventory }) {
                 sx={{ width: "300px", marginTop: "1rem" }} 
                 value={discount} 
                 helperText="Enter New Discount"
+                placeholder="Select a Mango to get current value"
                 />
-                <Button variant="contained" color="primary" type="submit" sx={{ width: "300px", marginTop: "1rem" }}>Submit</Button>
+                <Button variant="contained" color="primary" type="submit" sx={{ width: "300px", marginTop: "1rem" }}>Update Inventory</Button>
             </Grid>
         </form>
     );
