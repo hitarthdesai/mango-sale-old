@@ -24,22 +24,20 @@ function HomePage() {
         let inventoryArray = [];
         getDocs(inventoryReference).then(snapshot => {
             const arrayOfDocs = snapshot.docs;
+            const numberOfDocs = arrayOfDocs.length;
             arrayOfDocs.forEach(document => {
                 const documentID = document.id;
                 const documentReference = doc(db, `inventory/${documentID}`);
                 getDoc(documentReference).then(querySnapshot => {
                     const documentData = querySnapshot.data();
                     inventoryArray.push(documentData);
+                    if(inventoryArray.length === numberOfDocs)
+                        setInventory(inventoryArray);
                 })
             })
-            inventoryArray = inventoryArray.flat();
-        })
-        .then(() => {
-            setInventory(inventoryArray)
         }).catch(error => console.error(error.code));
     }, [])
 
-    console.log(inventory);
     const [cart, setCart] = useState({Hafus: 0, Kesar: 0, Langdo: 0, Rajapuri: 0, Amrapali: 0});
     const CartContext = createContext({});
     const [viewCart, setViewCart] = useState(false);
