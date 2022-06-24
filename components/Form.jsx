@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase"
+import Dialog from "@mui/material/Dialog";
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -15,6 +16,7 @@ function Form({ currentInventory }) {
     const [stock, setStock] = useState("");
     const [price, setPrice] = useState("");
     const [discount, setDiscount] = useState("");
+    const [openDialog, setOpenDialog] = useState(false);
 
     useEffect(() => {
         if(Object.keys(detailsOfSelectedMango).length !== 0) {
@@ -28,8 +30,14 @@ function Form({ currentInventory }) {
         }
     }, [selectedMango])
     
+    const UpdateStatusDialog = () => {
+        return(
+            <Dialog style={{width: "300px", backgroundColor: "red"}}>BRUH</Dialog>
+        );
+    }
 
     const handleSubmit = event => {
+        setOpenDialog(true);
         event.preventDefault();
         let newData = detailsOfSelectedMango;
         newData.price = Number(price);
@@ -91,7 +99,7 @@ function Form({ currentInventory }) {
     }
 
     return(
-        <form onSubmit={event => handleSubmit(event)}>
+        <>{openDialog ? <UpdateStatusDialog /> : <form onSubmit={event => handleSubmit(event)}>
             <Grid container alignItems="center" justifyContent="center" direction="column" sx={{width: "100vw", height: "100vh"}}>
                 <ComboBox />
                 <TextField 
@@ -102,7 +110,7 @@ function Form({ currentInventory }) {
                 sx={{ width: "300px", marginTop: "1rem" }} 
                 value={stock} 
                 helperText="Enter New Stock"
-                placeholder="Select a Mango to get current value"
+                placeholder="Select a Mango to get current stock"
                 />
                 <TextField 
                 id="price"
@@ -112,7 +120,7 @@ function Form({ currentInventory }) {
                 sx={{ width: "300px", marginTop: "1rem" }} 
                 value={price} 
                 helperText="Enter New Price"
-                placeholder="Select a Mango to get current value"
+                placeholder="Select a Mango to get current price"
                 />
                 <TextField 
                 id="discount"
@@ -122,11 +130,11 @@ function Form({ currentInventory }) {
                 sx={{ width: "300px", marginTop: "1rem" }} 
                 value={discount} 
                 helperText="Enter New Discount"
-                placeholder="Select a Mango to get current value"
+                placeholder="Select a Mango to get current discount"
                 />
                 <Button variant="contained" color="primary" type="submit" sx={{ width: "300px", marginTop: "1rem" }}>Update Inventory</Button>
             </Grid>
-        </form>
+        </form>}</>
     );
 }
 

@@ -38,7 +38,7 @@ function HomePage() {
         }).catch(error => console.error(error.code));
     }, [])
 
-    const [cart, setCart] = useState({Hafus: 0, Kesar: 0, Langdo: 0, Rajapuri: 0, Amrapali: 0});
+    const [cart, setCart] = useState({"Hafus(N)": 0, "Hafus(L)": 0, "Kesar(N)": 0, "Kesar(L)": 0, "Rajapuri(N)": 0, "Rajapuri(L)": 0, "Daseri(N)": 0, "Daseri(L)": 0, "Langdo(N)": 0, "Langdo(L)": 0, "Totapuri(N)": 0, "Totapuri(L)": 0});
     const CartContext = createContext({});
     const [viewCart, setViewCart] = useState(false);
 

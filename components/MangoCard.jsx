@@ -15,7 +15,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddAlertIcon from '@mui/icons-material/AddAlert';
 
-function MangoCard({ mango, cartContext }) {
+function MangoCard({ mango, cartContext, mangoInventory }) {
     const name = mango.name;
     const purpose = "Pickle";
     const photo = "https://images.unsplash.com/photo-1553279768-865429fa0078?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1974&q=80";
@@ -74,10 +74,14 @@ function MangoCard({ mango, cartContext }) {
                         </IconButton>
                         <Typography gutterBottom={false} align="center" variant="h5">{quantity}</Typography>
                         <IconButton onClick={() => {
-                            setQuantity(quantity + 1);
-                            let newCart = cart;
-                            newCart[name] = quantity + 1;
-                            setCart(newCart);
+                            if(quantity == mangoInventory.stock) {
+                                console.log("THAT'S IT");
+                            } else {
+                                setQuantity(quantity + 1);
+                                let newCart = cart;
+                                newCart[name] = quantity + 1;
+                                setCart(newCart);
+                            }
                         }}>
                             <AddIcon />
                         </IconButton>
