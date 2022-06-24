@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase"
-import Dialog from "@mui/material/Dialog";
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import Button from "@mui/material/Button";
+import LoadingButton from "@mui/lab/LoadingButton";
 import Grid from "@mui/material/Grid";
 import { collection, getDocs, query, setDoc, where } from "firebase/firestore";
 
@@ -16,7 +15,7 @@ function Form({ currentInventory }) {
     const [stock, setStock] = useState("");
     const [price, setPrice] = useState("");
     const [discount, setDiscount] = useState("");
-    const [openDialog, setOpenDialog] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if(Object.keys(detailsOfSelectedMango).length !== 0) {
@@ -30,14 +29,8 @@ function Form({ currentInventory }) {
         }
     }, [selectedMango])
     
-    const UpdateStatusDialog = () => {
-        return(
-            <Dialog style={{width: "300px", backgroundColor: "red"}}>BRUH</Dialog>
-        );
-    }
-
     const handleSubmit = event => {
-        setOpenDialog(true);
+        setLoading(true);
         event.preventDefault();
         let newData = detailsOfSelectedMango;
         newData.price = Number(price);
@@ -49,6 +42,8 @@ function Form({ currentInventory }) {
         getDocs(mangoQuery).then(querySnapshot => {
             const mangoDocRef = querySnapshot.docs[0].ref;
             setDoc(mangoDocRef, newData, { merge: true}).then(() => {
+                setTimeout(() => setLoading(false), 3000);
+            }).then(() => {
                 console.log("UPDATED SUCCESSFULLY");
                 setSelectedMango("");
                 setDetailsOfSelectedMango({});
@@ -97,9 +92,8 @@ function Form({ currentInventory }) {
         else if(elementID === "discount")
             setDiscount(newValue);
     }
-
     return(
-        <>{openDialog ? <UpdateStatusDialog /> : <form onSubmit={event => handleSubmit(event)}>
+        <form onSubmit={event => handleSubmit(event)}>
             <Grid container alignItems="center" justifyContent="center" direction="column" sx={{width: "100vw", height: "100vh"}}>
                 <ComboBox />
                 <TextField 
@@ -132,9 +126,9 @@ function Form({ currentInventory }) {
                 helperText="Enter New Discount"
                 placeholder="Select a Mango to get current discount"
                 />
-                <Button variant="contained" color="primary" type="submit" sx={{ width: "300px", marginTop: "1rem" }}>Update Inventory</Button>
+                <LoadingButton loading={loading} variant="contained" color="primary" type="submit" sx={{ width: "300px", marginTop: "1rem" }}>Update Inventory</LoadingButton>
             </Grid>
-        </form>}</>
+        </form>
     );
 }
 
