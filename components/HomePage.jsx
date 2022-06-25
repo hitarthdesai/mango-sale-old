@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from '../components/Header';
 import MainSection from '../components/MainSection';
 import Cart from './Cart';
@@ -7,6 +7,7 @@ import Form from "./Form";
 import { collection, getDoc, getDocs, doc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { app, db } from "../firebase";
+import { CartContext } from "../context/cart";
 
 function HomePage() {
     const auth = getAuth(app);
@@ -39,17 +40,19 @@ function HomePage() {
     }, [])
 
     const [cart, setCart] = useState({"Hafus(N)": 0, "Hafus(L)": 0, "Kesar(N)": 0, "Kesar(L)": 0, "Rajapuri(N)": 0, "Rajapuri(L)": 0, "Daseri(N)": 0, "Daseri(L)": 0, "Langdo(N)": 0, "Langdo(L)": 0, "Totapuri(N)": 0, "Totapuri(L)": 0});
-    const CartContext = createContext({});
     const [viewCart, setViewCart] = useState(false);
-    const ViewCartContext = createContext({});
+    useEffect(() => {
+        console.log("CHANGE IN VALUE OF VIEWCART", viewCart);
+    }, [viewCart])
 
     return (
-        <><CartContext.Provider value={{cart, setCart}}><ViewCartContext.Provider value={{viewCart, setViewCart}}>
-        <Header />
-        {currentUser === "rudradevelopers777@gmail.com" ? <Form currentInventory={inventory} /> :
-        <>{viewCart ? <Cart cartContext={CartContext} viewCartContext={ViewCartContext} /> : <MainSection cartContext={CartContext} viewCartContext={ViewCartContext} currentInventory={inventory}/>}</>}
+        <><CartContext.Provider value={{cart, setCart}}>
+        <Header currentInventory={inventory} />
+        {currentUser === "rudradevelopers777@gmail.com" ? 
+        <Form currentInventory={inventory} /> :
+        <MainSection currentInventory={inventory} />}
         <Footer />
-        </ViewCartContext.Provider></CartContext.Provider></>
+        </CartContext.Provider></>
     );
 }
 
