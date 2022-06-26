@@ -40,10 +40,6 @@ function HomePage() {
     }, [])
 
     const [cart, setCart] = useState({"Hafus(N)": 0, "Hafus(L)": 0, "Kesar(N)": 0, "Kesar(L)": 0, "Rajapuri(N)": 0, "Rajapuri(L)": 0, "Daseri(N)": 0, "Daseri(L)": 0, "Langdo(N)": 0, "Langdo(L)": 0, "Totapuri(N)": 0, "Totapuri(L)": 0});
-    const [viewCart, setViewCart] = useState(false);
-    useEffect(() => {
-        console.log("CHANGE IN VALUE OF VIEWCART", viewCart);
-    }, [viewCart])
 
     return (
         <><CartContext.Provider value={{cart, setCart}}>

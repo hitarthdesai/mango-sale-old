@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Cart from './Cart';
 
 import AppBar from '@mui/material/AppBar';
@@ -13,18 +13,23 @@ import CloseIcon from '@mui/icons-material/Close';
 
 function Header({ currentInventory }) {
     const [open, setOpen] = useState(false);
+    const appBarRef = useRef(null);
+    const [minHeight, setMinHeight] = useState(64);
+
+    useEffect(() => {
+        setMinHeight(appBarRef?.current?.clientHeight);
+    }, [appBarRef])
 
     return (
-    <AppBar position="static">
+    <AppBar position="static" ref={appBarRef}>
         <Container maxWidth="xl">
-        <Toolbar disableGutters>
+        <Toolbar disableGutters sx={{display: "flex", alignItems: "center", justifyContent: "space-between"}}>
             <IconButton size="large" color="inherit"><AgricultureIcon /></IconButton>
             {open ? 
             <IconButton variant='contained' onClick={() => setOpen(false)}><CloseIcon /></IconButton> : 
             <IconButton variant='contained' onClick={() => setOpen(true)}><ShoppingCartIcon /></IconButton>}
         </Toolbar>
-        <Drawer anchor='top' open={open}>
-            <AppBar><Toolbar><IconButton variant='contained' onClick={() => setOpen(false)}><CloseIcon /></IconButton></Toolbar></AppBar>
+        <Drawer anchor='top' open={open} sx={{transform: `translateY(${minHeight}px)`}}>
             <Cart currentInventory={currentInventory} />
         </Drawer>
         </Container>
