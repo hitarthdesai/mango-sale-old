@@ -5,9 +5,17 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
+import { PrecisionManufacturingOutlined } from '@mui/icons-material';
 
-function Cart({ currentInventory, cart }) {
-    const newCart = Object.keys(cart).filter(mango => cart[mango] > 0);
+function Cart({ cart }) {
+    console.log(cart);
+    let newCart = [];
+    Object.keys(cart).map(mangoName => {
+        const mango = cart[mangoName];
+        if(mango.quantity > 0)
+        newCart.push(mango);
+    });
+    console.log(newCart);
     return (
         <Table>
             <TableHead><TableRow>
@@ -18,17 +26,15 @@ function Cart({ currentInventory, cart }) {
                 <TableCell align='center'>Total</TableCell>
             </TableRow></TableHead>
             <TableBody>{
-                newCart.map((item, index) => {
-                    const quantity = cart[item];
-                    if(quantity <= 0)
-                    return null;
+                newCart.map((mangoItem, index) => {
+                    const quantity = mangoItem.quantity;
                     return(
-                        <TableRow key={item}>
+                        <TableRow key={index}>
                             <TableCell align='center'>{index+1}</TableCell>
-                            <TableCell align='center'>{item}</TableCell>
-                            <TableCell align='center'>50</TableCell>
+                            <TableCell align='center'>{mangoItem.name}</TableCell>
+                            <TableCell align='center'>{mangoItem.price}</TableCell>
                             <TableCell align='center'>{quantity}</TableCell>
-                            <TableCell align='center'>50</TableCell>
+                            <TableCell align='center'>{mangoItem.price * quantity}</TableCell>
                         </TableRow>
                     );
                 })

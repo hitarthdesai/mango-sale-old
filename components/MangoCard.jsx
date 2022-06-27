@@ -15,6 +15,7 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddAlertIcon from '@mui/icons-material/AddAlert';
+import { useEffect } from "react";
 
 function MangoCard({ mango }) {
     const name = mango.name;
@@ -30,10 +31,21 @@ function MangoCard({ mango }) {
     const [quantity, setQuantity] = useState(defaultValueOfQuantity);
     const defaultValueOfAddedToCart = initialQuantity !== 0;
     const [addedToCart, setAddedToCart] = useState(defaultValueOfAddedToCart);
+    
+    const [localCart, setLocalCart] = useState(null);
+    useEffect(() => {
+        if(!localCart)
+            setLocalCart(cart);
+    }, [cart]);
+    useEffect(() => {
+        if(localCart)
+            setCart(localCart);
+    }, [localCart]);
 
     const RemindMeButton = () => (
         <Button><AddAlertIcon />Remind Me</Button>
     );
+
     const AddToCartButton = () => (
         <IconButton onClick={() => {
             setAddedToCart(true);
@@ -42,9 +54,7 @@ function MangoCard({ mango }) {
             newMango["quantity"] = 1;
             const newCart = { ...cart };
             newCart[name] = newMango;
-            // console.log(newCart);
-            // setCart(newCart);
-            useMemo(() => setCart(newCart), []);
+            setLocalCart(newCart);
         }}><AddShoppingCartIcon /></IconButton>
     )
 
@@ -67,12 +77,16 @@ function MangoCard({ mango }) {
                                 setQuantity(0);
                                 let newMango = { ...mango };
                                 newMango["quantity"] = 0;
-                                setCart({ ...cart, name: newMango });
+                                const newCart = { ...cart };
+                                newCart[name] = newMango;
+                                setLocalCart(newCart);
                             } else {
                                 setQuantity(quantity - 1);
                                 let newMango = { ...mango };
                                 newMango["quantity"] = quantity - 1;
-                                setCart({ ...cart, name: newMango });
+                                const newCart = { ...cart };
+                                newCart[name] = newMango;
+                                setLocalCart(newCart);
                             }
                         }}>
                             <RemoveIcon />
@@ -85,7 +99,9 @@ function MangoCard({ mango }) {
                                 setQuantity(quantity + 1);
                                 let newMango = { ...mango };
                                 newMango["quantity"] = quantity + 1;
-                                setCart({ ...cart, name: newMango });
+                                const newCart = { ...cart };
+                                newCart[name] = newMango;
+                                setLocalCart(newCart);
                             }
                         }}>
                             <AddIcon />
