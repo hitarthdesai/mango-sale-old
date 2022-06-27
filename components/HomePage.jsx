@@ -14,11 +14,12 @@ function HomePage() {
     const [currentUser, setCurrentUser] = useState("");
     onAuthStateChanged(auth, user => {
         if(!user)
-            setCurrentUser("");
+        setCurrentUser("");
         else
-            setCurrentUser(user.email);
+        setCurrentUser(user.email);
     });
-        
+    
+    const [cart, setCart] = useState({"Hafus(N)": {}, "Hafus(L)": {}, "Kesar(N)": {}, "Kesar(L)": {}, "Rajapuri(N)": {}, "Rajapuri(L)": {}, "Daseri(N)": {}, "Daseri(L)": {}, "Langdo(N)": {}, "Langdo(L)": {}, "Totapuri(N)": {}, "Totapuri(L)": {}});
     const [inventory, setInventory] = useState([]);
     const inventoryReference = collection(db, "inventory");
     useEffect(() => {
@@ -32,22 +33,27 @@ function HomePage() {
                 getDoc(documentReference).then(querySnapshot => {
                     const documentData = querySnapshot.data();
                     inventoryArray.push(documentData);
-                    if(inventoryArray.length === numberOfDocs)
+                    if(inventoryArray.length === numberOfDocs) {
                         setInventory(inventoryArray);
+                        let sampleCart = {};
+                        inventoryArray.map(mangoItem => {
+                            const mangoName = mangoItem.name;
+                            sampleCart[mangoName] = { ...mangoItem, quantity: 0 };
+                        });
+                        setCart(sampleCart);
+                    }
                 })
             })
         }).catch(error => console.error(error.code));
-    }, [])
-
-    const [cart, setCart] = useState({"Hafus(N)": 0, "Hafus(L)": 0, "Kesar(N)": 0, "Kesar(L)": 0, "Rajapuri(N)": 0, "Rajapuri(L)": 0, "Daseri(N)": 0, "Daseri(L)": 0, "Langdo(N)": 0, "Langdo(L)": 0, "Totapuri(N)": 0, "Totapuri(L)": 0});
+    }, []);
 
     return (
         <><CartContext.Provider value={{cart, setCart}}>
-        <Header currentInventory={inventory} />
-        {currentUser === "rudradevelopers777@gmail.com" ? 
-        <Form currentInventory={inventory} /> :
-        <MainSection currentInventory={inventory} />}
-        <Footer />
+            <Header />
+            {currentUser === "rudradevelopers777@gmail.com" ? 
+            <Form /> :
+            <MainSection />}
+            <Footer />
         </CartContext.Provider></>
     );
 }

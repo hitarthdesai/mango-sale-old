@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useMemo } from "react";
 import { CartContext } from "../context/cart";
 
 import Typography from "@mui/material/Typography";
@@ -16,7 +16,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddAlertIcon from '@mui/icons-material/AddAlert';
 
-function MangoCard({ mango, mangoInventory }) {
+function MangoCard({ mango }) {
     const name = mango.name;
     const purpose = "Pickle";
     const photo = "https://images.unsplash.com/photo-1553279768-865429fa0078?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1974&q=80";
@@ -25,7 +25,7 @@ function MangoCard({ mango, mangoInventory }) {
     const discount = mango.discount;
 
     const {cart, setCart} = useContext(CartContext);
-    const initialQuantity = cart[name];
+    const initialQuantity = (cart[name]) ? cart[name]["quantity"] : 0;
     const defaultValueOfQuantity = initialQuantity;
     const [quantity, setQuantity] = useState(defaultValueOfQuantity);
     const defaultValueOfAddedToCart = initialQuantity !== 0;
@@ -38,9 +38,13 @@ function MangoCard({ mango, mangoInventory }) {
         <IconButton onClick={() => {
             setAddedToCart(true);
             setQuantity(1);
-            let newCart = cart;
-            newCart[name] = 1;
-            setCart(newCart);
+            let newMango = { ...mango };
+            newMango["quantity"] = 1;
+            const newCart = { ...cart };
+            newCart[name] = newMango;
+            // console.log(newCart);
+            // setCart(newCart);
+            useMemo(() => setCart(newCart), []);
         }}><AddShoppingCartIcon /></IconButton>
     )
 
@@ -61,27 +65,27 @@ function MangoCard({ mango, mangoInventory }) {
                             if(quantity == 1) {
                                 setAddedToCart(false);
                                 setQuantity(0);
-                                let newCart = cart;
-                                newCart[name] = 0;
-                                setCart(newCart);
+                                let newMango = { ...mango };
+                                newMango["quantity"] = 0;
+                                setCart({ ...cart, name: newMango });
                             } else {
                                 setQuantity(quantity - 1);
-                                let newCart = cart;
-                                newCart[name] = quantity - 1;
-                                setCart(newCart);
+                                let newMango = { ...mango };
+                                newMango["quantity"] = quantity - 1;
+                                setCart({ ...cart, name: newMango });
                             }
                         }}>
                             <RemoveIcon />
                         </IconButton>
                         <Typography gutterBottom={false} align="center" variant="h5">{quantity}</Typography>
                         <IconButton onClick={() => {
-                            if(quantity == mangoInventory.stock) {
+                            if(quantity == mango.stock) {
                                 console.log("THAT'S IT");
                             } else {
                                 setQuantity(quantity + 1);
-                                let newCart = cart;
-                                newCart[name] = quantity + 1;
-                                setCart(newCart);
+                                let newMango = { ...mango };
+                                newMango["quantity"] = quantity + 1;
+                                setCart({ ...cart, name: newMango });
                             }
                         }}>
                             <AddIcon />

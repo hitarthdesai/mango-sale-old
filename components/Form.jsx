@@ -6,10 +6,12 @@ import MenuItem from "@mui/material/MenuItem";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Grid from "@mui/material/Grid";
 import { collection, getDocs, query, setDoc, where } from "firebase/firestore";
+import { CartContext } from "../context/cart";
 
-function Form({ currentInventory }) {
+function Form() {
+    const { cart } = useContext(CartContext)
     let allMangoes = [];
-    currentInventory.map(mango => allMangoes.push(mango.name));
+    cart.map(mango => allMangoes.push(mango.name));
     const [selectedMango, setSelectedMango] = useState("");
     const [detailsOfSelectedMango, setDetailsOfSelectedMango] = useState({});
     const [stock, setStock] = useState("");
@@ -55,7 +57,7 @@ function Form({ currentInventory }) {
     const handleMangoSelect = event => {
         const nameOfSelectedMango = event.target.value;
         setSelectedMango(nameOfSelectedMango);
-        currentInventory.map(mangoObject => {
+        cart.map(mangoObject => {
             if(mangoObject.name === nameOfSelectedMango) {
                 setDetailsOfSelectedMango(mangoObject)
             }

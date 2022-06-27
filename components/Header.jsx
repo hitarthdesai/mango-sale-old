@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { CartContext } from '../context/cart';
+import Link from 'next/link';
 import Cart from './Cart';
 
 import AppBar from '@mui/material/AppBar';
@@ -11,9 +13,9 @@ import Drawer from '@mui/material/Drawer';
 import AgricultureIcon from '@mui/icons-material/Agriculture';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CloseIcon from '@mui/icons-material/Close';
-import Link from 'next/link';
 
-function Header({ currentInventory }) {
+function Header() {
+    const { cart } = useContext(CartContext);
     const [open, setOpen] = useState(false);
     const appBarRef = useRef(null);
     const [minHeight, setMinHeight] = useState(64);
@@ -29,10 +31,14 @@ function Header({ currentInventory }) {
             <IconButton size="large" color="inherit"><AgricultureIcon /></IconButton>
             {open ? 
             <IconButton variant='contained' onClick={() => setOpen(false)}><CloseIcon /></IconButton> : 
-            <IconButton variant='contained' onClick={() => setOpen(true)}><ShoppingCartIcon /></IconButton>}
+            <IconButton variant='contained' onClick={() => {
+                setOpen(true);
+                localStorage.setItem("cart", {...cart});
+                console.log(localStorage.getItem("cart"));
+            }}><ShoppingCartIcon /></IconButton>}
         </Toolbar>
         <Drawer anchor='top' open={open} sx={{ transform: `translateY(${minHeight}px)` }}>
-            <Cart currentInventory={currentInventory} />
+            <Cart cart={cart} />
             <Container sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
                 <Link href="/checkout">
                     <Button variant="contained" sx={{ width: "100%", margin: "0.5rem 0" }}>PROCEED TO CHECKOUT</Button>

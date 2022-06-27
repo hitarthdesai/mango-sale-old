@@ -6,8 +6,7 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 
-function Cart({ currentInventory }) {
-    const { cart } = useContext(CartContext);
+function Cart({ currentInventory, cart }) {
     const newCart = Object.keys(cart).filter(mango => cart[mango] > 0);
     return (
         <Table>
