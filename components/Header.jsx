@@ -33,8 +33,7 @@ function Header() {
             <IconButton variant='contained' onClick={() => setOpen(false)}><CloseIcon /></IconButton> : 
             <IconButton variant='contained' onClick={() => {
                 setOpen(true);
-                localStorage.setItem("cart", {...cart});
-                console.log(localStorage.getItem("cart"));
+                localStorage.setItem("cart", JSON.stringify(cart));
             }}><ShoppingCartIcon /></IconButton>}
         </Toolbar>
         <Drawer anchor='top' open={open} sx={{ transform: `translateY(${minHeight}px)` }}>

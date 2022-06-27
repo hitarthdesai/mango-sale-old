@@ -9,8 +9,7 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 function CheckoutSection() {
-    const cart = localStorage.getItem("cart");
-    console.log(cart);
+    const cart = JSON.parse(localStorage.getItem("cart"));
     return (
         <>
             <Accordion>

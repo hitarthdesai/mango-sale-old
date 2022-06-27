@@ -1,11 +1,8 @@
-import { useContext } from 'react';
-import { CartContext } from '../context/cart';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import { PrecisionManufacturingOutlined } from '@mui/icons-material';
 
 function Cart({ cart }) {
     console.log(cart);
@@ -15,7 +12,6 @@ function Cart({ cart }) {
         if(mango.quantity > 0)
         newCart.push(mango);
     });
-    console.log(newCart);
     return (
         <Table>
             <TableHead><TableRow>
