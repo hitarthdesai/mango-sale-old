@@ -5,7 +5,6 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 
 function Cart({ cart }) {
-    console.log(cart);
     let newCart = [];
     Object.keys(cart).map(mangoName => {
         const mango = cart[mangoName];

@@ -51,7 +51,6 @@ function Form() {
                 setDetailsOfSelectedMango({});
             }).catch(error => console.error(error));
         })
-        
     }
 
     const handleMangoSelect = event => {
