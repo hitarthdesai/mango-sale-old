@@ -59,6 +59,29 @@ function CheckoutSection() {
         addDoc(ordersReference, data).then(QuerySnapshot => {
             setTimeout(() => setLoading(false), 3000);
             setOrderReference(QuerySnapshot.id);
+            fetch('https://graph.facebook.com/v13.0/109961868433439/messages', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer EAAHQxna6ZBDgBAP9JLGF0fqNL0yc4fSSgMWc9KN633q78POyGdTZCZAzIlEHOYWt79ZAw0kuCc2FYPVSzsZCJKKnpennZBsmdfiJKO5wUDRJkaRIDc9psmifnijrOehR0ihGESmFIDAzfkQcth9NeYPrasZAdERYb47of3niwlWBee1OLTgyl16VuM4iu33G7bVEYYLdfaKigZDZD',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                        messaging_product: 'whatsapp',
+                        to: '16478796796',
+                        type: 'text',
+                        text: {
+                            body: `Hello From Rudra Developers\n\nWe are processing your most recent order with reference number *${orderReference}*. We will contact you shortly for more details. Thank you!`
+                        },
+                        // 'type': 'template',
+                        // 'template': {
+                        //     'name': 'hello_world',
+                        //     'language': {
+                        //         'code': 'en_US'
+                        //     }
+                        // }
+                    }
+                )
+            }).then(() => console.log("SUCCESS")).catch(error => console.log(error));
         })
     }
 
@@ -124,3 +147,33 @@ function CheckoutSection() {
 }
 
 export default CheckoutSection;
+
+/*
+curl -i -X POST \
+  https://graph.facebook.com/v13.0/109961868433439/messages \
+  -H 'Authorization: Bearer EAAHQxna6ZBDgBAP9JLGF0fqNL0yc4fSSgMWc9KN633q78POyGdTZCZAzIlEHOYWt79ZAw0kuCc2FYPVSzsZCJKKnpennZBsmdfiJKO5wUDRJkaRIDc9psmifnijrOehR0ihGESmFIDAzfkQcth9NeYPrasZAdERYb47of3niwlWBee1OLTgyl16VuM4iu33G7bVEYYLdfaKigZDZD' \
+  -H 'Content-Type: application/json' \
+  -d '{ "messaging_product": "whatsapp", "to": "16478796796", "type": "template", "template": { "name": "hello_world", "language": { "code": "en_US" } } }'
+*/
+
+/*
+fetch('https://graph.facebook.com/v13.0/109961868433439/messages', {
+    method: 'POST',
+    headers: {
+        'Authorization': 'Bearer EAAHQxna6ZBDgBAP9JLGF0fqNL0yc4fSSgMWc9KN633q78POyGdTZCZAzIlEHOYWt79ZAw0kuCc2FYPVSzsZCJKKnpennZBsmdfiJKO5wUDRJkaRIDc9psmifnijrOehR0ihGESmFIDAzfkQcth9NeYPrasZAdERYb47of3niwlWBee1OLTgyl16VuM4iu33G7bVEYYLdfaKigZDZD',
+        'Content-Type': 'application/json'
+    },
+    // body: '{ "messaging_product": "whatsapp", "to": "16478796796", "type": "template", "template": { "name": "hello_world", "language": { "code": "en_US" } } }',
+    body: JSON.stringify({
+        'messaging_product': 'whatsapp',
+        'to': '16478796796',
+        'type': 'template',
+        'template': {
+            'name': 'hello_world',
+            'language': {
+                'code': 'en_US'
+            }
+        }
+    })
+});
+*/
