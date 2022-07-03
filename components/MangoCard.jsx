@@ -1,9 +1,11 @@
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState } from "react";
 import { CartContext } from "../context/cart";
 
+import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
 
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -43,11 +45,14 @@ function MangoCard({ mango }) {
     }, [localCart]);
 
     const RemindMeButton = () => (
-        <Button><AddAlertIcon />Remind Me</Button>
+        <Button sx={{width: "100%", color: "black"}}>
+            <AddAlertIcon />
+            Remind Me
+        </Button>
     );
 
     const AddToCartButton = () => (
-        <IconButton onClick={() => {
+        <IconButton sx={{width: "100%"}} onClick={() => {
             setAddedToCart(true);
             setQuantity(1);
             let newMango = { ...mango };
@@ -55,26 +60,32 @@ function MangoCard({ mango }) {
             const newCart = { ...cart };
             newCart[name] = newMango;
             setLocalCart(newCart);
-        }}><AddShoppingCartIcon /></IconButton>
+        }}><AddShoppingCartIcon sx={{color: "black"}}/></IconButton>
     )
 
+    const MangoCardAlert = () => {
+        {stock === 0 ? "OUT OF STOCK" : discount === 0 ? "POPULAR" : `${discount}% off`}
+        if(stock === 0)
+            return <Alert variant="standard" icon={false} severity="error">Out of Stock</Alert>
+        if(stock <= 10)
+            return <Alert variant="standard" icon={false} severity="warning">Low in Stock</Alert>
+        if(discount !== 0)
+            return <Alert variant="standard" icon={false} severity="success">{discount}% Off</Alert>
+        return <></>
+    }
+
     return(
-        <>{Object.keys(mango).length !== 0 && <Card key={name} id={name} sx={{position: "relative"}}>
-            <div style={{
-                position: "absolute", right: "0px", top: "0px", 
-                display: "flex", alignItems: "center", justifyContent: "center",
-                backgroundColor: "#FF6961", width: "100%", height: "30px",
-                transform: "rotate(30deg) translateX(90px) translateY(0px)",
-            }}>
-                {stock === 0 ? "OUT OF STOCK" : discount === 0 ? "POPULAR" : `${discount}% off`}
-            </div>
+        <>{Object.keys(mango).length !== 0 && 
+        <Card key={name} id={name} sx={{position: "relative"}}>
             <CardHeader title={name} />
             <CardMedia image={photo} sx={{ height: "200px" }} />
             <CardContent>
-                <div style={{ display: "flex", justifyContent: "space-between"}}>
-                    <Typography variant="overline">{`₹${price}`}</Typography>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                    <Typography variant="overline" fontSize="1.25rem">{`₹${price}`}</Typography>
+                    <MangoCardAlert />
                 </div>
-                <CardActions>{
+                <Paper elevation={1} sx={{marginTop: "1rem", backgroundColor: stock === 0 ? "#8BD3E6" : "#FDFD96"}}>
+                    <CardActions>{
                     stock === 0 ?
                     <RemindMeButton /> :
                     addedToCart ? 
@@ -115,7 +126,9 @@ function MangoCard({ mango }) {
                             <AddIcon />
                         </IconButton>
                     </div> : <AddToCartButton />
-                }</CardActions>
+                    }</CardActions>
+                </Paper>
+                
             </CardContent>
         </Card>}</>
     );
