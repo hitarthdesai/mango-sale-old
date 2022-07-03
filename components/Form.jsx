@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { db } from "../firebase"
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
@@ -9,9 +9,9 @@ import { collection, getDocs, query, setDoc, where } from "firebase/firestore";
 import { CartContext } from "../context/cart";
 
 function Form() {
-    const { cart } = useContext(CartContext)
+    const { cart } = useContext(CartContext);
     let allMangoes = [];
-    cart.map(mango => allMangoes.push(mango.name));
+    Object.keys(cart).map(mangoName => allMangoes.push(mangoName));
     const [selectedMango, setSelectedMango] = useState("");
     const [detailsOfSelectedMango, setDetailsOfSelectedMango] = useState({});
     const [stock, setStock] = useState("");
@@ -56,7 +56,8 @@ function Form() {
     const handleMangoSelect = event => {
         const nameOfSelectedMango = event.target.value;
         setSelectedMango(nameOfSelectedMango);
-        cart.map(mangoObject => {
+        Object.keys(cart).map(mangoName => {
+            const mangoObject = cart[mangoName];
             if(mangoObject.name === nameOfSelectedMango) {
                 setDetailsOfSelectedMango(mangoObject)
             }

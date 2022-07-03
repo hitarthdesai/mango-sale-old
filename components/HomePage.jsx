@@ -19,7 +19,7 @@ function HomePage() {
         setCurrentUser(user.email);
     });
     
-    const [cart, setCart] = useState({"Hafus(N)": {}, "Hafus(L)": {}, "Kesar(N)": {}, "Kesar(L)": {}, "Rajapuri(N)": {}, "Rajapuri(L)": {}, "Daseri(N)": {}, "Daseri(L)": {}, "Langdo(N)": {}, "Langdo(L)": {}, "Totapuri(N)": {}, "Totapuri(L)": {}});
+    const [cart, setCart] = useState({"Hafus": {}, "Kesar": {}, "Rajapuri": {}, "Daseri": {}, "Langdo": {}, "Totapuri": {}});
     const [inventory, setInventory] = useState([]);
     const inventoryReference = collection(db, "inventory");
     useEffect(() => {
