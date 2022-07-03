@@ -59,7 +59,15 @@ function MangoCard({ mango }) {
     )
 
     return(
-        <Card key={name} id={name}>
+        <>{Object.keys(mango).length !== 0 && <Card key={name} id={name} sx={{position: "relative"}}>
+            <div style={{
+                position: "absolute", right: "0px", top: "0px", 
+                display: "flex", alignItems: "center", justifyContent: "center",
+                backgroundColor: "#FF6961", width: "100%", height: "30px",
+                transform: "rotate(30deg) translateX(90px) translateY(0px)",
+            }}>
+                {stock === 0 ? "OUT OF STOCK" : discount === 0 ? "POPULAR" : `${discount}% off`}
+            </div>
             <CardHeader title={name} />
             <CardMedia image={photo} sx={{ height: "200px" }} />
             <CardContent>
@@ -109,7 +117,7 @@ function MangoCard({ mango }) {
                     </div> : <AddToCartButton />
                 }</CardActions>
             </CardContent>
-        </Card>
+        </Card>}</>
     );
 }
 

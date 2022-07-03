@@ -16,7 +16,7 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { Paper } from '@mui/material';
 
 import { db } from "../firebase"
-import { addDoc, collection, QuerySnapshot, serverTimestamp } from "firebase/firestore"
+import { addDoc, collection, serverTimestamp } from "firebase/firestore"
 
 function CheckoutSection() {
     const [checkoutCart, setCheckoutCart] = useState({});
@@ -87,7 +87,7 @@ function CheckoutSection() {
 
     const AfterOrderPlaced = () => (
         <Container>
-            <Typography variant='body2'>Your order Reference Is:</Typography>
+            <Typography variant='body2'>Your Order Reference Is:</Typography>
             <Typography variant='h5' color="green" sx={{padding: "1rem 0"}}>{orderReference}</Typography>
             <Typography variant='h6' lineHeight="1.25">Please wait for a {whatsAppPreferable ? "WhatsApp" : "Text"} message from our team to finalise your order</Typography>
         </Container>
