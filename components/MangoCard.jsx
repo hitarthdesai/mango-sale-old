@@ -20,6 +20,7 @@ import AddAlertIcon from "@mui/icons-material/AddAlert";
 
 function MangoCard({ mango }) {
 	const name = mango.name;
+	name;
 	const photo =
 		"https://images.unsplash.com/photo-1553279768-865429fa0078?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1974&q=80";
 	const stock = mango.stock;
@@ -27,11 +28,10 @@ function MangoCard({ mango }) {
 	const discount = mango.discount;
 
 	const { cart, setCart } = useContext(CartContext);
-	console.log(cart);
 
 	const RemindMeButton = () => (
-		<Button sx={{ width: "100%", color: "black" }}>
-			<AddAlertIcon />
+		<Button fullWidth sx={{ color: "black" }}>
+			<AddAlertIcon sx={{ marginRight: "0.4rem" }} />
 			Remind Me
 		</Button>
 	);
@@ -40,22 +40,16 @@ function MangoCard({ mango }) {
 		<Button
 			fullWidth
 			onClick={() => {
-				const mangoName = mango.name;
-				setCart({ ...cart, [mangoName]: 1 });
+				setCart({ ...cart, [name]: 1 });
 			}}
+			sx={{ color: "black" }}
 		>
-			<AddShoppingCartIcon sx={{ color: "black" }} />
+			<AddShoppingCartIcon sx={{ marginRight: "0.4rem" }} />
+			Add to Cart
 		</Button>
 	);
 
 	const MangoCardAlert = () => {
-		{
-			stock === 0
-				? "OUT OF STOCK"
-				: discount === 0
-				? "POPULAR"
-				: `${discount}% off`;
-		}
 		if (stock === 0)
 			return (
 				<Alert variant="standard" icon={false} severity="error">

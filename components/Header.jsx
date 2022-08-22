@@ -1,20 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { CartContext } from "../context/cart";
-import Link from "next/link";
-import Cart from "./Cart";
+import React, { useContext } from "react";
 
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
-import Drawer from "@mui/material/Drawer";
 
 import AgricultureIcon from "@mui/icons-material/Agriculture";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CloseIcon from "@mui/icons-material/Close";
+import { ViewContext } from "../context/view";
 
 function Header() {
+	const { view, setView } = useContext(ViewContext);
 	return (
 		<AppBar position="static">
 			<Container maxWidth="xl">
@@ -29,6 +26,19 @@ function Header() {
 					<IconButton size="large" color="inherit">
 						<AgricultureIcon />
 					</IconButton>
+					{view === "cart" ? (
+						<IconButton
+							size="large"
+							color="inherit"
+							onClick={() => setView("home")}
+						>
+							<CloseIcon />
+						</IconButton>
+					) : (
+						<IconButton size="large" color="inherit">
+							<ShoppingCartIcon onClick={() => setView("cart")} />
+						</IconButton>
+					)}
 				</Toolbar>
 			</Container>
 		</AppBar>
