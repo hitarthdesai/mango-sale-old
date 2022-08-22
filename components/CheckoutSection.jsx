@@ -48,6 +48,11 @@ function CheckoutSection() {
         setPhoneNumber(currentPhoneNumber);
     }
 
+    const [address, setAddress] = useState("");
+    const handleAddress = event => {
+      setAddress(event.target.value);
+    }
+
     const [loading, setLoading] = useState(false);
     const [orderReference, setOrderReference] = useState("")
     const handleSubmit = event => {
@@ -64,19 +69,15 @@ function CheckoutSection() {
         addDoc(ordersReference, data).then(QuerySnapshot => {
             setTimeout(() => setLoading(false), 3000);
             setOrderReference(QuerySnapshot.id);
-            fetch('https://graph.facebook.com/v13.0/109961868433439/messages', {
+            fetch('https://graph.facebook.com/v14.0/110828838364452/messages', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer EAAHQxna6ZBDgBAP9JLGF0fqNL0yc4fSSgMWc9KN633q78POyGdTZCZAzIlEHOYWt79ZAw0kuCc2FYPVSzsZCJKKnpennZBsmdfiJKO5wUDRJkaRIDc9psmifnijrOehR0ihGESmFIDAzfkQcth9NeYPrasZAdERYb47of3niwlWBee1OLTgyl16VuM4iu33G7bVEYYLdfaKigZDZD',
+                    'Authorization': 'Bearer EAAKjyfMrxeIBAOK31y0U9eZAhKgUa4K2PsjPwEcQNwkV4ry87gLx3SJZAxjW1oNQrOziCYJdkwXwRCSe1GalFi5OF5V9LFZBVPmRcjMgc8AqgslccHNWUMLnrXzUO6nLl4fmKlG1ufFCE475lID9dovNzQJNaMUKAfcSunHuczevseOFyokASmC1F6di7qVbtA4I0oO8ZB5DlQPSsWiZA',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                        messaging_product: 'whatsapp',
-                        to: '16478796796',
-                        type: 'text',
-                        text: {
-                            body: `Hello From Rudra Developers\n\nWe are processing your most recent order with reference number *${orderReference}*. We will contact you shortly for more details. Thank you!`
-                        },
+                        'messaging_product': 'whatsapp',
+                        'to': '16478796796',
                         // 'type': 'template',
                         // 'template': {
                         //     'name': 'hello_world',
@@ -84,9 +85,13 @@ function CheckoutSection() {
                         //         'code': 'en_US'
                         //     }
                         // }
+                        type: "text",
+                        text: {
+                          body: "HELLO",
+                        },
                     }
                 )
-            }).then(() => console.log("SUCCESS")).catch(error => console.log(error));
+            }).then((res) => console.log("SUCCESS", res)).catch(error => console.log(error));
         })
     }
 
@@ -127,8 +132,8 @@ function CheckoutSection() {
                         <Grid container alignItems="flex-start" direction="column" sx={{width: "100%", marginTop: "1rem"}}>
                             <Paper elevation={12} sx={{padding: "1rem"}}>
                                 <TextField
-                                required
-                                onChange={event => handlePhoneNumber(event)} 
+                                // required
+                                onChange={handlePhoneNumber} 
                                 type="tel" 
                                 variant="filled" 
                                 sx={{ width: "300px", marginTop: "0" }} 
@@ -142,14 +147,14 @@ function CheckoutSection() {
                                     <Checkbox color="success" defaultChecked value={whatsAppPreferable} onChange={() => setWhatsAppPreferable(!whatsAppPreferable)} />
                                 </Grid>
                                 <TextField
-                                required
+                                // required
                                 ref={addressInputField}
-                                // onChange={event => handlePhoneNumber(event)} 
+                                onChange={handleAddress} 
                                 variant="filled" 
                                 sx={{ width: "300px", marginTop: "1rem" }} 
-                                // helperText={phoneNumber.length === 10 ? "Done" : `${10 - phoneNumber.length} digits more`}
+                                helperText="Enter your address as best as you can"
                                 placeholder="Enter Address"
-                                // value={phoneNumber}
+                                value={address}
                                 />
                                 <LoadingButton loading={loading} variant="contained" color="info" type="submit" sx={{ width: "300px", marginTop: "1rem" }}>Place Order</LoadingButton>
                             </Paper>
