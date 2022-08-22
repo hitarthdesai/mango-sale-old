@@ -15,7 +15,6 @@ export default function Home({ inventoryArray }) {
 		if (view === "home") return <MainSection />;
 		if (view === "cart") return <Cart />;
 	};
-	console.log(view);
 
 	return (
 		<InventoryContext.Provider value={{ inventory: inventoryArray }}>
