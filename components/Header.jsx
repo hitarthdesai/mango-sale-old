@@ -35,8 +35,12 @@ function Header() {
 							<CloseIcon />
 						</IconButton>
 					) : (
-						<IconButton size="large" color="inherit">
-							<ShoppingCartIcon onClick={() => setView("cart")} />
+						<IconButton
+							size="large"
+							color="inherit"
+							onClick={() => setView("cart")}
+						>
+							<ShoppingCartIcon />
 						</IconButton>
 					)}
 				</Toolbar>

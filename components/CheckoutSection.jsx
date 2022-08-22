@@ -14,13 +14,21 @@ import {
 	TextField,
 	Checkbox,
 	Grid,
+	Button,
+	InputAdornment,
+	Box,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+	RecaptchaVerifier,
+	signInWithPhoneNumber,
+	signOut,
+} from "firebase/auth";
 
 function CheckoutSection() {
 	const { cart } = useContext(CartContext);
@@ -47,6 +55,45 @@ function CheckoutSection() {
 		const currentPhoneNumber = event.target.value;
 		if (isNaN(currentPhoneNumber) || currentPhoneNumber.length > 10) return;
 		setPhoneNumber(currentPhoneNumber);
+	};
+	const [otp, setOtp] = useState("");
+	const handleOtp = event => {
+		setOtp(event.target.value);
+	};
+
+	const setupRecaptcha = () => {
+		const newRecaptchaVerifier = new RecaptchaVerifier(
+			"verifyPhoneNumber",
+			{
+				size: "invisible",
+				callback: () => {},
+			},
+			auth
+		);
+		return newRecaptchaVerifier;
+	};
+
+	const [confirmationResult, setConfirmationResult] = useState(null);
+	const [isOtpSent, setIsOtpSent] = useState(false);
+	const handleSendOtp = () => {
+		const newRecaptchaVerifier = setupRecaptcha();
+		signInWithPhoneNumber(auth, `+91${phoneNumber}`, newRecaptchaVerifier)
+			.then(loginConfirmationResult => {
+				setConfirmationResult(loginConfirmationResult);
+				setIsOtpSent(true);
+			})
+			.catch(error => {
+				console.log(error);
+			});
+	};
+
+	const [phoneNumberVerified, setPhoneNumberVerified] = useState(false);
+	const handleVerification = () => {
+		if (otp.length != 6) return;
+		confirmationResult.confirm(otp).then(userCredentials => {
+			setPhoneNumberVerified(true);
+			signOut(auth);
+		});
 	};
 
 	const [address, setAddress] = useState("");
@@ -127,23 +174,108 @@ function CheckoutSection() {
 											width: "100%",
 										}}
 									>
-										<TextField
-											fullWidth
-											required
-											onChange={handlePhoneNumber}
-											type="tel"
-											variant="filled"
-											helperText={
-												phoneNumber.length === 10
-													? "Done"
-													: `${
-															10 -
-															phoneNumber.length
-													  } digits more`
-											}
-											placeholder="Enter a 10 Digit Phone Number"
-											value={phoneNumber}
-										/>
+										<>
+											{!phoneNumberVerified && (
+												<>
+													<TextField
+														required
+														fullWidth
+														onChange={
+															handlePhoneNumber
+														}
+														type="tel"
+														variant="filled"
+														helperText={
+															isOtpSent
+																? ""
+																: phoneNumber.length ===
+																  10
+																? "Done"
+																: `${
+																		10 -
+																		phoneNumber.length
+																  } digits more`
+														}
+														placeholder="Enter a 10 Digit Phone Number"
+														value={phoneNumber}
+														InputProps={{
+															startAdornment: (
+																<InputAdornment
+																	position="start"
+																	sx={{
+																		paddingBottom:
+																			"0.5rem",
+																	}}
+																>
+																	+91
+																</InputAdornment>
+															),
+														}}
+														inputProps={{
+															style: {
+																paddingTop:
+																	"1rem",
+															},
+														}}
+													/>
+													{!isOtpSent && (
+														<Button
+															fullWidth
+															variant="contained"
+															onClick={
+																handleSendOtp
+															}
+														>
+															Request OTP
+														</Button>
+													)}
+													{isOtpSent && (
+														<>
+															<TextField
+																required
+																fullWidth
+																onChange={
+																	handleOtp
+																}
+																type="tel"
+																variant="filled"
+																helperText={
+																	otp.length ===
+																	9
+																		? "Done"
+																		: `${
+																				6 -
+																				otp.length
+																		  } digits more`
+																}
+																placeholder="Enter the 6 digit OTP"
+																value={otp}
+																inputProps={{
+																	style: {
+																		paddingTop:
+																			"1rem",
+																	},
+																}}
+																sx={{
+																	marginTop:
+																		"1rem",
+																}}
+															/>
+															<Button
+																fullWidth
+																variant="contained"
+																onClick={
+																	handleVerification
+																}
+															>
+																Verify Phone
+																Number
+															</Button>
+														</>
+													)}
+												</>
+											)}
+										</>
 										{/* <TextField
 											required
 											onChange={handleAddress}
@@ -159,6 +291,7 @@ function CheckoutSection() {
 										<LoadingButton
 											fullWidth
 											loading={loading}
+											disabled={true}
 											variant="contained"
 											color="success"
 											type="submit"
@@ -170,6 +303,7 @@ function CheckoutSection() {
 										</LoadingButton>
 									</Grid>
 								</Paper>
+								<div id="verifyPhoneNumber"></div>
 							</form>
 						</AccordionDetails>
 					</Accordion>
