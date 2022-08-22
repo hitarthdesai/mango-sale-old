@@ -15,7 +15,8 @@ export default function Home({ inventoryArray }) {
 	const Component = () => {
 		if (view === "home") return <MainSection />;
 		if (view === "cart") return <Cart />;
-		if (view === "checkout") return <CheckoutSection />;
+		if (view === "checkout" || view === "rerendercheckout")
+			return <CheckoutSection />;
 	};
 
 	return (

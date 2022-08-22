@@ -1,34 +1,24 @@
 import { useEffect, useState, useRef, useContext } from "react";
+import Cart from "./Cart";
+import VerifyPhoneNumber from "./VerifyPhoneNumber";
+
 import { CartContext } from "../context/cart";
 import { InventoryContext } from "../context/inventory";
 import { ViewContext } from "../context/view";
-import Cart from "./Cart";
 
 import {
-	Paper,
 	Accordion,
 	AccordionSummary,
 	AccordionDetails,
 	Typography,
 	Container,
-	TextField,
-	Checkbox,
-	Grid,
 	Button,
-	InputAdornment,
-	Box,
 } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
-import { auth, db } from "../firebase";
+import { db } from "../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import {
-	RecaptchaVerifier,
-	signInWithPhoneNumber,
-	signOut,
-} from "firebase/auth";
+import AddressForm from "./AddressForm";
 
 function CheckoutSection() {
 	const { cart } = useContext(CartContext);
@@ -50,50 +40,14 @@ function CheckoutSection() {
 		setAmountPayable(total);
 	}, []);
 
-	const [phoneNumber, setPhoneNumber] = useState("");
-	const handlePhoneNumber = event => {
-		const currentPhoneNumber = event.target.value;
-		if (isNaN(currentPhoneNumber) || currentPhoneNumber.length > 10) return;
-		setPhoneNumber(currentPhoneNumber);
-	};
-	const [otp, setOtp] = useState("");
-	const handleOtp = event => {
-		setOtp(event.target.value);
+	const [orderPhoneNumber, setOrderPhoneNumber] = useState("");
+	const orderPhoneNumberSetter = newOrderPhoneNumber => {
+		setOrderPhoneNumber(newOrderPhoneNumber);
 	};
 
-	const setupRecaptcha = () => {
-		const newRecaptchaVerifier = new RecaptchaVerifier(
-			"verifyPhoneNumber",
-			{
-				size: "invisible",
-				callback: () => {},
-			},
-			auth
-		);
-		return newRecaptchaVerifier;
-	};
-
-	const [confirmationResult, setConfirmationResult] = useState(null);
-	const [isOtpSent, setIsOtpSent] = useState(false);
-	const handleSendOtp = () => {
-		const newRecaptchaVerifier = setupRecaptcha();
-		signInWithPhoneNumber(auth, `+91${phoneNumber}`, newRecaptchaVerifier)
-			.then(loginConfirmationResult => {
-				setConfirmationResult(loginConfirmationResult);
-				setIsOtpSent(true);
-			})
-			.catch(error => {
-				console.log(error);
-			});
-	};
-
-	const [phoneNumberVerified, setPhoneNumberVerified] = useState(false);
-	const handleVerification = () => {
-		if (otp.length != 6) return;
-		confirmationResult.confirm(otp).then(userCredentials => {
-			setPhoneNumberVerified(true);
-			signOut(auth);
-		});
+	const [orderAddress, setOrderAddress] = useState("");
+	const orderAddressSetter = newOrderAddress => {
+		setOrderAddress(newOrderAddress);
 	};
 
 	const [address, setAddress] = useState("");
@@ -132,185 +86,62 @@ function CheckoutSection() {
 		</Container>
 	);
 
+	const handleSubmitDetails = event => {
+		event.preventDefault();
+	};
+
 	return (
 		<>
-			{orderReference === "" ? (
-				<>
-					<Accordion>
-						<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-							<Typography>Final Cart</Typography>
-						</AccordionSummary>
-						<AccordionDetails>
-							<Cart />
-							<Container>
-								<Typography
-									variant="subtitle2"
-									align="right"
-									sx={{
-										marginTop: "1rem",
-										textTransform: "uppercase",
-									}}
+			<Accordion>
+				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+					<Typography>Final Cart</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<Cart />
+					<Container>
+						<Typography
+							variant="subtitle2"
+							align="right"
+							sx={{
+								marginTop: "1rem",
+								textTransform: "uppercase",
+							}}
+						>
+							Amount Payable
+						</Typography>
+						<Typography variant="h5" align="right">
+							₹{amountPayable}
+						</Typography>
+					</Container>
+				</AccordionDetails>
+			</Accordion>
+			<Accordion>
+				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+					<Typography>Your Details</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<form onSubmit={handleSubmitDetails}>
+						{orderPhoneNumber.length === 0 ? (
+							<VerifyPhoneNumber
+								setOrderPhoneNumber={orderPhoneNumberSetter}
+							/>
+						) : (
+							<>
+								<AddressForm
+									setOrderAddress={orderAddressSetter}
+								/>
+								<Button
+									fullWidth
+									variant="contained"
+									type="submit"
 								>
-									Amount Payable
-								</Typography>
-								<Typography variant="h5" align="right">
-									₹{amountPayable}
-								</Typography>
-							</Container>
-						</AccordionDetails>
-					</Accordion>
-					<Accordion>
-						<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-							<Typography>Your Details</Typography>
-						</AccordionSummary>
-						<AccordionDetails>
-							<form onSubmit={event => handleSubmit(event)}>
-								<Paper elevation={12} sx={{ padding: "1rem" }}>
-									<Grid
-										container
-										alignItems="flex-start"
-										direction="column"
-										sx={{
-											width: "100%",
-										}}
-									>
-										<>
-											{!phoneNumberVerified && (
-												<>
-													<TextField
-														required
-														fullWidth
-														onChange={
-															handlePhoneNumber
-														}
-														type="tel"
-														variant="filled"
-														helperText={
-															isOtpSent
-																? ""
-																: phoneNumber.length ===
-																  10
-																? "Done"
-																: `${
-																		10 -
-																		phoneNumber.length
-																  } digits more`
-														}
-														placeholder="Enter a 10 Digit Phone Number"
-														value={phoneNumber}
-														InputProps={{
-															startAdornment: (
-																<InputAdornment
-																	position="start"
-																	sx={{
-																		paddingBottom:
-																			"0.5rem",
-																	}}
-																>
-																	+91
-																</InputAdornment>
-															),
-														}}
-														inputProps={{
-															style: {
-																paddingTop:
-																	"1rem",
-															},
-														}}
-													/>
-													{!isOtpSent && (
-														<Button
-															fullWidth
-															variant="contained"
-															onClick={
-																handleSendOtp
-															}
-														>
-															Request OTP
-														</Button>
-													)}
-													{isOtpSent && (
-														<>
-															<TextField
-																required
-																fullWidth
-																onChange={
-																	handleOtp
-																}
-																type="tel"
-																variant="filled"
-																helperText={
-																	otp.length ===
-																	9
-																		? "Done"
-																		: `${
-																				6 -
-																				otp.length
-																		  } digits more`
-																}
-																placeholder="Enter the 6 digit OTP"
-																value={otp}
-																inputProps={{
-																	style: {
-																		paddingTop:
-																			"1rem",
-																	},
-																}}
-																sx={{
-																	marginTop:
-																		"1rem",
-																}}
-															/>
-															<Button
-																fullWidth
-																variant="contained"
-																onClick={
-																	handleVerification
-																}
-															>
-																Verify Phone
-																Number
-															</Button>
-														</>
-													)}
-												</>
-											)}
-										</>
-										{/* <TextField
-											required
-											onChange={handleAddress}
-											variant="filled"
-											sx={{
-												width: "300px",
-												marginTop: "1rem",
-											}}
-											helperText="Enter your address as best as you can"
-											placeholder="Enter Address"
-											value={address}
-										/> */}
-										<LoadingButton
-											fullWidth
-											loading={loading}
-											disabled={true}
-											variant="contained"
-											color="success"
-											type="submit"
-											sx={{
-												marginTop: "1rem",
-											}}
-										>
-											Place Order
-										</LoadingButton>
-									</Grid>
-								</Paper>
-								<div id="verifyPhoneNumber"></div>
-							</form>
-						</AccordionDetails>
-					</Accordion>
-				</>
-			) : (
-				<AfterOrderPlaced />
-			)}
+									Proceed to Payment
+								</Button>
+							</>
+						)}
+					</form>
+				</AccordionDetails>
+			</Accordion>
 		</>
 	);
 }
