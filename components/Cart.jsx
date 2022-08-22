@@ -17,7 +17,7 @@ import {
 function Cart() {
 	const { cart } = useContext(CartContext);
 	const { inventory } = useContext(InventoryContext);
-	const { setView } = useContext(ViewContext);
+	const { view, setView } = useContext(ViewContext);
 
 	if (Object.keys(cart).length === 0)
 		return (
@@ -73,15 +73,17 @@ function Cart() {
 					})}
 				</TableBody>
 			</Table>
-			<Button
-				fullWidth
-				variant="contained"
-				color="success"
-				onClick={() => setView("checkout")}
-				sx={{ margin: "1rem" }}
-			>
-				Proceed to Checkout
-			</Button>
+			{view === "cart" && (
+				<Button
+					fullWidth
+					variant="contained"
+					color="success"
+					onClick={() => setView("checkout")}
+					sx={{ margin: "1rem" }}
+				>
+					Proceed to Checkout
+				</Button>
+			)}
 		</Grid>
 	);
 }

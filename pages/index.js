@@ -1,6 +1,7 @@
 import Head from "next/head";
 import MainSection from "../components/MainSection";
 import Cart from "../components/Cart";
+import CheckoutSection from "../components/CheckoutSection";
 
 import { useContext } from "react";
 import { ViewContext } from "../context/view";
@@ -14,6 +15,7 @@ export default function Home({ inventoryArray }) {
 	const Component = () => {
 		if (view === "home") return <MainSection />;
 		if (view === "cart") return <Cart />;
+		if (view === "checkout") return <CheckoutSection />;
 	};
 
 	return (
