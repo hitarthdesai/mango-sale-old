@@ -16,8 +16,6 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { db } from "../firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import AddressForm from "./AddressForm";
 
 function CheckoutSection() {
@@ -50,49 +48,15 @@ function CheckoutSection() {
 		setOrderAddress(newOrderAddress);
 	};
 
-	const [address, setAddress] = useState("");
-	const handleAddress = event => {
-		setAddress(event.target.value);
-	};
-
-	const [loading, setLoading] = useState(false);
-	const [orderReference, setOrderReference] = useState("");
-	const handleSubmit = event => {
-		setLoading(true);
-		event.preventDefault();
-		const data = {
-			orderTimestamp: serverTimestamp(),
-			order: JSON.stringify(checkoutCart),
-			phoneNumber: phoneNumber,
-		};
-
-		const ordersReference = collection(db, "orders");
-		addDoc(ordersReference, data).then(QuerySnapshot => {
-			setTimeout(() => setLoading(false), 3000);
-			setOrderReference(QuerySnapshot.id);
-		});
-	};
-
-	const AfterOrderPlaced = () => (
-		<Container>
-			<Typography variant="body2">Your Order Reference Is:</Typography>
-			<Typography variant="h5" color="green" sx={{ padding: "1rem 0" }}>
-				{orderReference}
-			</Typography>
-			<Typography variant="h6" lineHeight="1.25">
-				Please wait for a {whatsAppPreferable ? "WhatsApp" : "Text"}{" "}
-				message from our team to finalise your order
-			</Typography>
-		</Container>
-	);
-
+	const [detailsSubmitted, setDetailsSubmitted] = useState(false);
 	const handleSubmitDetails = event => {
 		event.preventDefault();
+		setDetailsSubmitted(true);
 	};
 
 	return (
 		<>
-			<Accordion>
+			<Accordion disabled={detailsSubmitted} expanded={!detailsSubmitted}>
 				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 					<Typography>Final Cart</Typography>
 				</AccordionSummary>
@@ -115,7 +79,7 @@ function CheckoutSection() {
 					</Container>
 				</AccordionDetails>
 			</Accordion>
-			<Accordion>
+			<Accordion disabled={detailsSubmitted} expanded={!detailsSubmitted}>
 				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 					<Typography>Your Details</Typography>
 				</AccordionSummary>
@@ -141,6 +105,12 @@ function CheckoutSection() {
 						)}
 					</form>
 				</AccordionDetails>
+			</Accordion>
+			<Accordion disabled={!detailsSubmitted} expanded={detailsSubmitted}>
+				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+					<Typography>Payment Information</Typography>
+				</AccordionSummary>
+				<AccordionDetails>Bruh</AccordionDetails>
 			</Accordion>
 		</>
 	);
